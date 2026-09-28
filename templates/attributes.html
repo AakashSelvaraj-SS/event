@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Excel Attributes - AI Document Extractor{% endblock %}
+{% block page_title %}Configure Excel Output Columns{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-3 shadow-xs border">
+            <div class="step-item">
+                <span class="step-num"><i class="bi bi-check"></i></span>
+                <span>Upload Documents</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item active">
+                <span class="step-num">2</span>
+                <span>Select Attributes</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num">3</span>
+                <span>Preview & Verify</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num">4</span>
+                <span>Excel & Analytics</span>
+            </div>
+        </div>
+
+        <form action="{{ url_for('attributes') }}" method="POST">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">Select Required Excel Attributes</h5>
+                        <p class="text-secondary fs-sm mb-0">Choose which columns will be extracted and included in your final editable Excel spreadsheet.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="selectAllBtn">
+                            <i class="bi bi-check-all me-1"></i> Select All
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="clearAllBtn">
+                            <i class="bi bi-x-lg me-1"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Attribute categories -->
+                    {% set categories = ['Personal', 'Financial', 'Demographic', 'Official', 'Academic', 'Location'] %}
+                    
+                    {% for cat in categories %}
+                        {% set cat_attrs = available_attributes | selectattr('category', 'equalto', cat) | list %}
+                        {% if cat_attrs %}
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-secondary text-uppercase fs-xs tracking-wide mb-3">
+                                <i class="bi bi-tag-fill me-1 text-primary"></i> {{ cat }} Information
+                            </h6>
+                            <div class="row g-3">
+                                {% for attr in cat_attrs %}
+                                <div class="col-md-6 col-lg-4">
+                                    <label class="attribute-card d-flex align-items-center gap-3 w-100 {% if attr.id in selected %}selected{% endif %}">
+                                        <input class="form-check-input mt-0 attribute-checkbox" type="checkbox" name="attributes" value="{{ attr.id }}" {% if attr.id in selected %}checked{% endif %}>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold text-dark fs-sm">{{ attr.label }}</div>
+                                            <small class="text-muted fs-xs">Key: <code>{{ attr.id }}</code></small>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                        <a href="{{ url_for('upload') }}" class="btn btn-light border px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Upload
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-xs">
+                            <i class="bi bi-cpu-fill me-1"></i> Start Processing ({{ total_docs }} Files)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const checkboxes = document.querySelectorAll('.attribute-checkbox');
+
+    function syncCardStyle(cb) {
+        const card = cb.closest('.attribute-card');
+        if (card) {
+            if (cb.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        }
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => syncCardStyle(cb));
+    });
+
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', () => {
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+                syncCardStyle(cb);
+            });
+        });
+    }
+
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                syncCardStyle(cb);
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

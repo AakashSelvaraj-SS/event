@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Preview & Verification - AI Document Extractor{% endblock %}
+{% block page_title %}Extracted Data Preview & Inline Editor{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-3 shadow-xs border">
+            <div class="step-item">
+                <span class="step-num"><i class="bi bi-check"></i></span>
+                <span>Upload Documents</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num"><i class="bi bi-check"></i></span>
+                <span>Select Attributes</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item active">
+                <span class="step-num">3</span>
+                <span>Preview & Verify</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num">4</span>
+                <span>Excel & Analytics</span>
+            </div>
+        </div>
+
+        <!-- Header Actions Card -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">Verify & Edit Extracted Document Data</h5>
+                    <p class="text-secondary fs-sm mb-0">Review the OCR extracted attributes. Click on any table cell to edit values before generating your final Excel file.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" id="savePreviewBtn" class="btn btn-outline-primary px-3 shadow-xs">
+                        <i class="bi bi-floppy-fill me-1"></i> Save Changes
+                    </button>
+                    <a href="{{ url_for('generate_excel') }}" class="btn btn-success px-4 fw-semibold shadow-xs">
+                        <i class="bi bi-file-earmark-excel-fill me-1"></i> Generate Excel (.xlsx)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Extracted Preview Cards -->
+        {% for doc_id, item in doc_records_map.items() %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+            <div class="card-header bg-white p-3 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-text-fill fs-4 text-primary"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-0">{{ item.doc_info.filename }}</h6>
+                        <small class="text-muted">Detected Type: <span class="badge bg-primary bg-opacity-10 text-primary">{{ item.doc_info.doc_type }}</span> | Language: <span class="badge bg-light text-dark border">{{ item.doc_info.language }}</span></small>
+                    </div>
+                </div>
+
+                <div>
+                    {% if item.doc_info.qr_status == 'Verified' %}
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                        <i class="bi bi-qr-code-scan me-1"></i> QR Verified (Data Consistent)
+                    </span>
+                    {% elif item.doc_info.qr_status == 'QR Present (Metadata)' %}
+                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1">
+                        <i class="bi bi-qr-code me-1"></i> QR Detected (Portal URL)
+                    </span>
+                    {% elif item.doc_info.qr_status == 'Data Mismatch' %}
+                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">
+                        <i class="bi bi-exclamation-triangle me-1"></i> QR Mismatch
+                    </span>
+                    {% else %}
+                    <span class="badge bg-light text-muted border px-2 py-1">
+                        <i class="bi bi-qr-code me-1"></i> QR Not Found
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0 editable-table">
+                        <thead class="table-dark fs-xs text-uppercase">
+                            <tr>
+                                <th style="width: 25%;">Attribute / Field</th>
+                                <th style="width: 50%;">Extracted Value (Editable)</th>
+                                <th style="width: 15%;" class="text-center">Confidence</th>
+                                <th style="width: 10%;" class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fs-sm">
+                            {% for attr_id in selected_attrs %}
+                                {% set record = item.fields.get(attr_id) %}
+                                {% if record %}
+                                <tr>
+                                    <td class="fw-semibold text-secondary ps-3">
+                                        {{ record.label }}
+                                        <div class="fs-xs text-muted fw-normal"><code>{{ attr_id }}</code></div>
+                                    </td>
+                                    <td class="p-2">
+                                        <input type="text" 
+                                               class="form-control form-control-sm border editable-input" 
+                                               data-record-id="{{ record.record_id }}" 
+                                               value="{{ record.value }}" 
+                                               placeholder="Click to enter or modify value">
+                                    </td>
+                                    <td class="text-center">
+                                        {% if record.confidence >= 85 %}
+                                        <span class="badge badge-confidence-high px-2 py-1 rounded-pill">{{ record.confidence }}%</span>
+                                        {% elif record.confidence >= 70 %}
+                                        <span class="badge badge-confidence-medium px-2 py-1 rounded-pill">{{ record.confidence }}%</span>
+                                        {% else %}
+                                        <span class="badge badge-confidence-low px-2 py-1 rounded-pill">{{ record.confidence }}%</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if record.is_edited %}
+                                        <span class="badge bg-warning bg-opacity-25 text-warning-emphasis">Edited</span>
+                                        {% else %}
+                                        <span class="badge bg-light text-muted border">Original</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Bottom Action Buttons -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <a href="{{ url_for('attributes') }}" class="btn btn-light border px-4">
+                <i class="bi bi-sliders me-1"></i> Change Selected Attributes
+            </a>
+            <a href="{{ url_for('generate_excel') }}" class="btn btn-success px-4 py-2 fw-semibold shadow-xs">
+                <i class="bi bi-file-earmark-excel-fill me-1"></i> Confirm & Generate Excel (.xlsx)
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const saveBtn = document.getElementById('savePreviewBtn');
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function () {
+            const inputs = document.querySelectorAll('.editable-input');
+            const records = [];
+
+            inputs.forEach(input => {
+                records.push({
+                    record_id: input.getAttribute('data-record-id'),
+                    value: input.value
+                });
+            });
+
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+
+            fetch('{{ url_for("save_preview") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ records: records })
+            })
+            .then(res => res.json())
+            .then(data => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Saved!';
+                setTimeout(() => {
+                    saveBtn.innerHTML = '<i class="bi bi-floppy-fill me-1"></i> Save Changes';
+                }, 2500);
+
+                if (data.success) {
+                    alert('Your changes have been saved successfully!');
+                }
+            })
+            .catch(err => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="bi bi-floppy-fill me-1"></i> Save Changes';
+                alert('Error saving changes: ' + err);
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,10 @@
+Flask
+Werkzeug
+Pillow
+pandas
+openpyxl
+PyPDF2
+numpy
+pytest
+opencv-python-headless
+easyocr

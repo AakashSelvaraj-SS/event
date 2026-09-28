@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Documents - AI Document Extractor{% endblock %}
+{% block page_title %}Upload Certificates & Documents{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-3 shadow-xs border">
+            <div class="step-item active">
+                <span class="step-num">1</span>
+                <span>Upload Documents</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num">2</span>
+                <span>Select Attributes</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num">3</span>
+                <span>Preview & Verify</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num">4</span>
+                <span>Excel & Analytics</span>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 border-bottom">
+                <h5 class="fw-bold text-dark mb-1">Upload Documents</h5>
+                <p class="text-secondary fs-sm mb-0">Upload one or multiple official certificates (Income, Community, Marksheets, Birth certificates, Aadhaar, etc.).</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form id="uploadForm" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                    <!-- Drag and Drop Box -->
+                    <div class="upload-dropzone mb-4" id="uploadDropzone">
+                        <div class="upload-icon-circle">
+                            <i class="bi bi-cloud-arrow-up-fill fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-2">Drag and drop your documents here</h5>
+                        <p class="text-muted fs-sm mb-3">Supports JPG, JPEG, PNG, and PDF (Up to 16 MB each)</p>
+                        <button type="button" class="btn btn-outline-primary px-4 fw-semibold shadow-xs">
+                            <i class="bi bi-folder2-open me-1"></i> Browse Files
+                        </button>
+                        <input type="file" id="documentInput" name="documents" multiple accept=".png,.jpg,.jpeg,.pdf" class="d-none">
+                    </div>
+
+                    <!-- Selected Files Preview Container -->
+                    <div id="selectedFilesSection" class="d-none mb-4">
+                        <h6 class="fw-bold text-dark mb-3">Selected Documents Ready to Upload</h6>
+                        <div id="selectedFilesList"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-light border px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" id="submitUploadBtn" class="btn btn-primary px-4 fw-semibold shadow-xs" disabled>
+                            <i class="bi bi-check2-circle me-1"></i> Upload & Continue to Attributes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Currently Staged Documents in Session -->
+        {% if documents %}
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white p-3 border-bottom d-flex align-items-center justify-content-between">
+                <h6 class="fw-bold text-dark mb-0">Documents in Current Session ({{ documents | length }})</h6>
+                <a href="{{ url_for('attributes') }}" class="btn btn-sm btn-primary">
+                    Proceed with {{ documents | length }} Document(s) <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light fs-xs text-uppercase text-secondary">
+                            <tr>
+                                <th class="ps-4">Document</th>
+                                <th>Format</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fs-sm">
+                            {% for doc in documents %}
+                            <tr>
+                                <td class="ps-4 fw-medium">
+                                    {% if doc.file_type == 'pdf' %}
+                                    <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
+                                    {% else %}
+                                    <i class="bi bi-file-earmark-image-fill text-primary me-2"></i>
+                                    {% endif %}
+                                    {{ doc.original_filename }}
+                                </td>
+                                <td><span class="badge bg-light text-dark border text-uppercase">{{ doc.file_type }}</span></td>
+                                <td>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ doc.status }}</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <form action="{{ url_for('delete_doc', doc_id=doc.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this document?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="Remove">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Generated Excel - AI Document Extractor{% endblock %}
+{% block page_title %}Excel File Ready for Download{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-3 shadow-xs border">
+            <div class="step-item">
+                <span class="step-num"><i class="bi bi-check"></i></span>
+                <span>Upload Documents</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num"><i class="bi bi-check"></i></span>
+                <span>Select Attributes</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item">
+                <span class="step-num"><i class="bi bi-check"></i></span>
+                <span>Preview & Verify</span>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-xs"></i>
+            <div class="step-item active">
+                <span class="step-num">4</span>
+                <span>Excel & Analytics</span>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-success bg-opacity-10 border-bottom border-success border-opacity-25 p-4 text-center">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle p-3 mb-3 shadow-sm">
+                    <i class="bi bi-file-earmark-excel-fill fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-1">Excel Spreadsheet Generated Successfully!</h4>
+                <p class="text-secondary fs-sm mb-0">Your customized, fully editable <code>.xlsx</code> document is ready for download.</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <div class="bg-light p-4 rounded-3 border mb-4">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <small class="text-secondary text-uppercase fs-xs fw-semibold">File Name</small>
+                            <div class="fw-bold text-dark text-truncate mt-1">{{ filename }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-secondary text-uppercase fs-xs fw-semibold">File Size</small>
+                            <div class="fw-bold text-dark mt-1">{{ file_size_formatted }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-secondary text-uppercase fs-xs fw-semibold">Total Records Extracted</small>
+                            <div class="fw-bold text-dark mt-1">{{ total_records }} Document(s)</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-secondary text-uppercase fs-xs fw-semibold">Selected Columns</small>
+                            <div class="fw-bold text-dark mt-1">{{ total_columns }} Column(s)</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-top">
+                        <small class="text-secondary text-uppercase fs-xs fw-semibold">Included Attributes:</small>
+                        <div class="d-flex flex-wrap gap-1 mt-2">
+                            {% for attr in selected_attrs %}
+                            <span class="badge bg-white text-dark border px-2 py-1">{{ attr }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Download Action -->
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('download_excel', filename=filename) }}" class="btn btn-success btn-lg py-3 fw-bold shadow-xs">
+                        <i class="bi bi-download me-2"></i> Download Excel (.xlsx)
+                    </a>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('analytics') }}" class="btn btn-outline-primary w-50 py-2 fw-semibold">
+                            <i class="bi bi-pie-chart-fill me-1"></i> View Session Analytics
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary w-50 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#newUploadModal">
+                            <i class="bi bi-plus-circle me-1"></i> Start New Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

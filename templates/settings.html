@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - AI Document Extractor{% endblock %}
+{% block page_title %}System & Account Settings{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 border-bottom">
+                <h5 class="fw-bold text-dark mb-1">User Account & Profile</h5>
+                <p class="text-secondary fs-sm mb-0">Manage your credentials and view platform parameters.</p>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fs-xs text-secondary text-uppercase fw-semibold">Full Name</label>
+                        <input type="text" class="form-control" value="{{ user.full_name }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fs-xs text-secondary text-uppercase fw-semibold">Username</label>
+                        <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fs-xs text-secondary text-uppercase fw-semibold">Email Address</label>
+                        <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fs-xs text-secondary text-uppercase fw-semibold">Account Created</label>
+                        <input type="text" class="form-control" value="{{ user.created_at }}" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-white p-4 border-bottom">
+                <h5 class="fw-bold text-dark mb-1">OCR Engine & Supported Languages</h5>
+                <p class="text-secondary fs-sm mb-0">Multilingual configuration and document pipeline components.</p>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <h6 class="fw-bold text-dark mb-3">Supported Languages Configuration</h6>
+                <div class="row g-2 mb-4">
+                    {% for code, lang in supported_languages.items() %}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fw-semibold text-dark fs-sm">{{ lang }}</div>
+                                <small class="text-muted">Code: <code>{{ code }}</code></small>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Enabled</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h6 class="fw-bold text-dark mb-3">Pipeline Specifications</h6>
+                <ul class="list-group list-group-flush fs-sm">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>OCR Engine</span>
+                        <span class="fw-semibold text-primary">EasyOCR & PyPDF2</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>Image Preprocessing</span>
+                        <span class="fw-semibold text-primary">OpenCV (Grayscale, CLAHE, Bilateral Denoising, Otsu)</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>Spreadsheet Generation</span>
+                        <span class="fw-semibold text-primary">Pandas & OpenPyXL (.xlsx)</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>QR Code Verification</span>
+                        <span class="fw-semibold text-primary">OpenCV QRCodeDetector (Local consistency check)</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>Database Storage</span>
+                        <span class="fw-semibold text-primary">SQLite 3</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+
+# Uploaded/generated files
+uploads/*
+generated_excel/*
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Frontend dependencies/build
+event-planner-frontend/node_modules/
+event-planner-frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
