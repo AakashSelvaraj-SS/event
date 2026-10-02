@@ -8,7 +8,7 @@ import EditorToolbar from '../components/EditorToolbar';
 export default function MainEditor() {
   const { mode, category } = useParams();
   const navigate = useNavigate();
-  
+
   // Mock State for Scene
   const [sceneState, setSceneState] = useState({
     capacity: 300,
@@ -81,22 +81,22 @@ export default function MainEditor() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
-      
+
       {/* LEFT: Design Workspace (75%) */}
       <div className="flex flex-col w-[75%] relative">
-        <EditorToolbar 
-          currentMode={sceneState.mode} 
-          setMode={(m) => setSceneState(prev => ({ ...prev, mode: m }))} 
+        <EditorToolbar
+          currentMode={sceneState.mode}
+          setMode={(m) => setSceneState(prev => ({ ...prev, mode: m }))}
         />
-        
+
         <div className="flex-1 relative flex">
           {/* Customization Sidebar */}
           <div className="w-64 bg-panel border-r border-white/10 p-4 flex flex-col gap-4 overflow-y-auto custom-scrollbar z-10">
             <div>
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center"><Palette className="w-4 h-4 mr-2"/> Object Properties</h3>
-              
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center"><Palette className="w-4 h-4 mr-2" /> Object Properties</h3>
+
               <div className="space-y-4">
-                
+
                 {/* Dynamic Menu based on Selected Object */}
                 {sceneState.selectedObject === 'chair' && (
                   <div className="bg-white/5 p-3 rounded-lg border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
@@ -106,46 +106,46 @@ export default function MainEditor() {
                       {['white', 'red', 'black', 'gold', 'blue', 'green'].map(c => {
                         const bgColors: any = { white: 'bg-white', red: 'bg-red-700', black: 'bg-black', gold: 'bg-yellow-500', blue: 'bg-blue-700', green: 'bg-emerald-600' };
                         const isSelected = sceneState.selectedChairId !== null ? sceneState.individualChairColors[sceneState.selectedChairId] === c || (sceneState.chairColor === c && !sceneState.individualChairColors[sceneState.selectedChairId]) : sceneState.chairColor === c;
-                        
+
                         return (
                           <button key={c} onClick={() => {
                             if (sceneState.selectedChairId !== null) {
-                              setSceneState(s => ({...s, individualChairColors: {...s.individualChairColors, [s.selectedChairId!]: c}}));
+                              setSceneState(s => ({ ...s, individualChairColors: { ...s.individualChairColors, [s.selectedChairId!]: c } }));
                             } else {
-                              setSceneState(s => ({...s, chairColor: c, individualChairColors: {}})); // reset individual when applying to all
+                              setSceneState(s => ({ ...s, chairColor: c, individualChairColors: {} })); // reset individual when applying to all
                             }
                           }} className={`w-8 h-8 rounded-full ${bgColors[c]} border-2 ${isSelected ? 'border-indigo-500' : 'border-gray-500/50'}`} title={c} />
                         );
                       })}
                     </div>
-                    
+
                     {sceneState.selectedChairId !== null && (
-                      <button 
-                        onClick={() => setSceneState(s => ({...s, selectedChairId: null}))}
+                      <button
+                        onClick={() => setSceneState(s => ({ ...s, selectedChairId: null }))}
                         className="w-full mb-3 p-1.5 text-xs rounded border border-indigo-500/50 text-indigo-400 hover:bg-indigo-500/20"
                       >
                         Currently editing single chair. Click to edit ALL chairs.
                       </button>
                     )}
-                    
+
                     <label className="text-xs text-gray-400 block mb-1">Chair Style (20 Varieties)</label>
-                    <select 
+                    <select
                       value={sceneState.chairStyle}
-                      onChange={(e) => setSceneState(s => ({...s, chairStyle: e.target.value}))}
+                      onChange={(e) => setSceneState(s => ({ ...s, chairStyle: e.target.value }))}
                       className="w-full mb-3 p-2 text-sm rounded bg-white/5 border border-white/10 text-white"
                     >
-                      {Array.from({length: 20}).map((_, i) => (
-                        <option key={i+1} value={(i+1).toString()} className="bg-gray-800">Style {i+1}</option>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <option key={i + 1} value={(i + 1).toString()} className="bg-gray-800">Style {i + 1}</option>
                       ))}
                     </select>
 
                     <label className="text-xs text-gray-400 block mb-1">Capacity</label>
-                    <input 
-                      type="range" 
+                    <input
+                      type="range"
                       min="50" max="600" step="50"
                       value={sceneState.capacity}
-                      onChange={(e) => setSceneState(s => ({...s, capacity: parseInt(e.target.value)}))}
-                      className="w-full accent-indigo-500" 
+                      onChange={(e) => setSceneState(s => ({ ...s, capacity: parseInt(e.target.value) }))}
+                      className="w-full accent-indigo-500"
                     />
                     <div className="text-xs text-right mt-1 text-gray-400">{sceneState.capacity} Seats</div>
                   </div>
@@ -155,13 +155,13 @@ export default function MainEditor() {
                   <div className="bg-white/5 p-3 rounded-lg border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                     <h4 className="text-sm font-semibold mb-2">Stage Design</h4>
                     <label className="text-xs text-gray-400 block mb-1">Background Theme (20 Varieties)</label>
-                    <select 
+                    <select
                       value={sceneState.stageDesign}
-                      onChange={(e) => setSceneState(s => ({...s, stageDesign: e.target.value}))}
+                      onChange={(e) => setSceneState(s => ({ ...s, stageDesign: e.target.value }))}
                       className="w-full mb-3 p-2 text-sm rounded bg-white/5 border border-white/10 text-white"
                     >
-                      {Array.from({length: 20}).map((_, i) => (
-                        <option key={i+1} value={(i+1).toString()} className="bg-gray-800">Background Design {i+1}</option>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <option key={i + 1} value={(i + 1).toString()} className="bg-gray-800">Background Design {i + 1}</option>
                       ))}
                     </select>
                   </div>
@@ -170,26 +170,26 @@ export default function MainEditor() {
                 {sceneState.selectedObject === 'sofa' && (
                   <div className="bg-white/5 p-3 rounded-lg border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                     <h4 className="text-sm font-semibold mb-2">Stage Sofa</h4>
-                    
+
                     <label className="text-xs text-gray-400 block mb-1">Sofa Color</label>
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'gold'}))} className={`w-8 h-8 rounded-full bg-yellow-500 border-2 ${sceneState.sofaColor === 'gold' ? 'border-indigo-500' : 'border-transparent'}`} title="Gold" />
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'white'}))} className={`w-8 h-8 rounded-full bg-white border-2 ${sceneState.sofaColor === 'white' ? 'border-indigo-500' : 'border-gray-300'}`} title="White" />
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'black'}))} className={`w-8 h-8 rounded-full bg-black border-2 ${sceneState.sofaColor === 'black' ? 'border-indigo-500' : 'border-transparent'}`} title="Black" />
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'red'}))} className={`w-8 h-8 rounded-full bg-red-600 border-2 ${sceneState.sofaColor === 'red' ? 'border-indigo-500' : 'border-transparent'}`} title="Red" />
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'purple'}))} className={`w-8 h-8 rounded-full bg-purple-600 border-2 ${sceneState.sofaColor === 'purple' ? 'border-indigo-500' : 'border-transparent'}`} title="Purple" />
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'pink'}))} className={`w-8 h-8 rounded-full bg-pink-400 border-2 ${sceneState.sofaColor === 'pink' ? 'border-indigo-500' : 'border-transparent'}`} title="Pink" />
-                      <button onClick={() => setSceneState(s => ({...s, sofaColor: 'green'}))} className={`w-8 h-8 rounded-full bg-emerald-600 border-2 ${sceneState.sofaColor === 'green' ? 'border-indigo-500' : 'border-transparent'}`} title="Green" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'gold' }))} className={`w-8 h-8 rounded-full bg-yellow-500 border-2 ${sceneState.sofaColor === 'gold' ? 'border-indigo-500' : 'border-transparent'}`} title="Gold" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'white' }))} className={`w-8 h-8 rounded-full bg-white border-2 ${sceneState.sofaColor === 'white' ? 'border-indigo-500' : 'border-gray-300'}`} title="White" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'black' }))} className={`w-8 h-8 rounded-full bg-black border-2 ${sceneState.sofaColor === 'black' ? 'border-indigo-500' : 'border-transparent'}`} title="Black" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'red' }))} className={`w-8 h-8 rounded-full bg-red-600 border-2 ${sceneState.sofaColor === 'red' ? 'border-indigo-500' : 'border-transparent'}`} title="Red" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'purple' }))} className={`w-8 h-8 rounded-full bg-purple-600 border-2 ${sceneState.sofaColor === 'purple' ? 'border-indigo-500' : 'border-transparent'}`} title="Purple" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'pink' }))} className={`w-8 h-8 rounded-full bg-pink-400 border-2 ${sceneState.sofaColor === 'pink' ? 'border-indigo-500' : 'border-transparent'}`} title="Pink" />
+                      <button onClick={() => setSceneState(s => ({ ...s, sofaColor: 'green' }))} className={`w-8 h-8 rounded-full bg-emerald-600 border-2 ${sceneState.sofaColor === 'green' ? 'border-indigo-500' : 'border-transparent'}`} title="Green" />
                     </div>
 
                     <label className="text-xs text-gray-400 block mb-1">Select Sofa Style (20 Varieties)</label>
-                    <select 
+                    <select
                       value={sceneState.sofaStyle}
-                      onChange={(e) => setSceneState(s => ({...s, sofaStyle: e.target.value}))}
+                      onChange={(e) => setSceneState(s => ({ ...s, sofaStyle: e.target.value }))}
                       className="w-full mb-3 p-2 text-sm rounded bg-white/5 border border-white/10 text-white"
                     >
-                      {Array.from({length: 20}).map((_, i) => (
-                        <option key={i+1} value={(i+1).toString()} className="bg-gray-800">Sofa Model {i+1}</option>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <option key={i + 1} value={(i + 1).toString()} className="bg-gray-800">Sofa Model {i + 1}</option>
                       ))}
                     </select>
                   </div>
@@ -207,26 +207,26 @@ export default function MainEditor() {
                 {sceneState.selectedObject === 'light' && (
                   <div className="bg-white/5 p-3 rounded-lg border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                     <h4 className="text-sm font-semibold mb-2">Lighting Editor</h4>
-                    
+
                     <label className="text-xs text-gray-400 block mb-1">Chandelier Design (20 Varieties)</label>
-                    <select 
+                    <select
                       value={sceneState.chandelierStyle}
-                      onChange={(e) => setSceneState(s => ({...s, chandelierStyle: e.target.value}))}
+                      onChange={(e) => setSceneState(s => ({ ...s, chandelierStyle: e.target.value }))}
                       className="w-full mb-3 p-2 text-sm rounded bg-white/5 border border-white/10 text-white"
                     >
-                      {Array.from({length: 20}).map((_, i) => (
-                        <option key={i+1} value={(i+1).toString()} className="bg-gray-800">Chandelier {i+1}</option>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <option key={i + 1} value={(i + 1).toString()} className="bg-gray-800">Chandelier {i + 1}</option>
                       ))}
                     </select>
 
                     <label className="text-xs text-gray-400 block mb-1">Wall Light Style (20 Varieties)</label>
-                    <select 
+                    <select
                       value={sceneState.wallLightStyle}
-                      onChange={(e) => setSceneState(s => ({...s, wallLightStyle: e.target.value}))}
+                      onChange={(e) => setSceneState(s => ({ ...s, wallLightStyle: e.target.value }))}
                       className="w-full mb-3 p-2 text-sm rounded bg-white/5 border border-white/10 text-white"
                     >
-                      {Array.from({length: 20}).map((_, i) => (
-                        <option key={i+1} value={(i+1).toString()} className="bg-gray-800">Wall Light {i+1}</option>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <option key={i + 1} value={(i + 1).toString()} className="bg-gray-800">Wall Light {i + 1}</option>
                       ))}
                     </select>
                   </div>
@@ -235,19 +235,19 @@ export default function MainEditor() {
                 {sceneState.selectedObject === 'dj' && (
                   <div className="bg-white/5 p-3 rounded-lg border border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                     <h4 className="text-sm font-semibold mb-2">DJ Console</h4>
-                    
+
                     <label className="text-xs text-gray-400 block mb-1">Screen Graphics (20 Varieties)</label>
-                    <select 
+                    <select
                       value={sceneState.djScreen}
-                      onChange={(e) => setSceneState(s => ({...s, djScreen: e.target.value}))}
+                      onChange={(e) => setSceneState(s => ({ ...s, djScreen: e.target.value }))}
                       className="w-full mb-3 p-2 text-sm rounded bg-white/5 border border-white/10 text-white"
                     >
-                      {Array.from({length: 20}).map((_, i) => (
-                        <option key={i+1} value={(i+1).toString()} className="bg-gray-800">Visualizer {i+1}</option>
+                      {Array.from({ length: 20 }).map((_, i) => (
+                        <option key={i + 1} value={(i + 1).toString()} className="bg-gray-800">Visualizer {i + 1}</option>
                       ))}
                     </select>
-                    
-                    <button onClick={() => setSceneState(s => ({...s, hasDJ: false, selectedObject: ''}))} className="w-full mt-2 p-1.5 text-xs rounded border border-red-500/50 text-red-400 hover:bg-red-500/20">Remove DJ</button>
+
+                    <button onClick={() => setSceneState(s => ({ ...s, hasDJ: false, selectedObject: '' }))} className="w-full mt-2 p-1.5 text-xs rounded border border-red-500/50 text-red-400 hover:bg-red-500/20">Remove DJ</button>
                   </div>
                 )}
 
@@ -270,11 +270,11 @@ export default function MainEditor() {
                 <div className="bg-white/5 p-3 rounded-lg border border-white/5">
                   <h4 className="text-sm font-semibold mb-2">Decor & Audio</h4>
                   <label className="flex items-center text-sm cursor-pointer hover:bg-white/5 p-2 rounded transition-colors">
-                    <input type="checkbox" checked={sceneState.hasDJ} onChange={(e) => setSceneState(s => ({...s, hasDJ: e.target.checked}))} className="mr-3 accent-indigo-500" />
+                    <input type="checkbox" checked={sceneState.hasDJ} onChange={(e) => setSceneState(s => ({ ...s, hasDJ: e.target.checked }))} className="mr-3 accent-indigo-500" />
                     Include DJ Setup
                   </label>
                   <label className="flex items-center text-sm cursor-pointer hover:bg-white/5 p-2 rounded transition-colors">
-                    <input type="checkbox" checked={sceneState.hasRedCarpet} onChange={(e) => setSceneState(s => ({...s, hasRedCarpet: e.target.checked}))} className="mr-3 accent-indigo-500" />
+                    <input type="checkbox" checked={sceneState.hasRedCarpet} onChange={(e) => setSceneState(s => ({ ...s, hasRedCarpet: e.target.checked }))} className="mr-3 accent-indigo-500" />
                     Red Carpet Aisle
                   </label>
                 </div>
@@ -282,7 +282,7 @@ export default function MainEditor() {
             </div>
 
             <div className="mt-auto space-y-3">
-              <button 
+              <button
                 onClick={() => {
                   setShowToast(true);
                   setTimeout(() => setShowToast(false), 2000);
@@ -291,8 +291,8 @@ export default function MainEditor() {
               >
                 Apply Changes
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => setShowCatalogModal(true)}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-xl flex items-center justify-center text-sm font-medium shadow-[0_0_15px_rgba(79,70,229,0.3)] transition-all"
               >
@@ -300,7 +300,7 @@ export default function MainEditor() {
                 Add New Product
               </button>
 
-              <button 
+              <button
                 onClick={startCamera}
                 className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white p-2.5 rounded-xl flex items-center justify-center text-sm transition-all"
               >
@@ -311,18 +311,18 @@ export default function MainEditor() {
           </div>
 
           <div className="flex-1 relative">
-            <SceneViewer 
-              sceneState={sceneState} 
-              category={category} 
+            <SceneViewer
+              sceneState={sceneState}
+              category={category}
               onSelectObject={(id, subId) => {
                 if (id === 'chair' && subId !== undefined) {
-                  setSceneState(s => ({...s, selectedObject: 'chair', selectedChairId: subId}));
+                  setSceneState(s => ({ ...s, selectedObject: 'chair', selectedChairId: subId }));
                 } else {
-                  setSceneState(s => ({...s, selectedObject: id, selectedChairId: null}));
+                  setSceneState(s => ({ ...s, selectedObject: id, selectedChairId: null }));
                 }
-              }} 
+              }}
             />
-            
+
             {showToast && (
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl font-bold flex items-center animate-bounce z-50">
                 <span className="mr-2">✓</span> Changes Applied!
@@ -337,19 +337,19 @@ export default function MainEditor() {
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <div className="bg-panel rounded-2xl w-full max-w-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
             <div className="p-4 border-b border-white/10 flex justify-between items-center bg-[#15171c]">
-              <h2 className="font-bold flex items-center"><Camera className="w-5 h-5 mr-2 text-accent"/> Add Real-Life Object</h2>
-              <button onClick={closeCamera} className="text-gray-400 hover:text-white p-1 bg-white/5 rounded-md"><X className="w-5 h-5"/></button>
+              <h2 className="font-bold flex items-center"><Camera className="w-5 h-5 mr-2 text-accent" /> Add Real-Life Object</h2>
+              <button onClick={closeCamera} className="text-gray-400 hover:text-white p-1 bg-white/5 rounded-md"><X className="w-5 h-5" /></button>
             </div>
-            
+
             <div className="relative bg-black h-96 flex items-center justify-center overflow-hidden">
-              <video 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
-                muted 
-                className={`w-full h-full object-cover ${scanStatus !== 'idle' ? 'opacity-50 blur-sm' : ''} transition-all duration-500`} 
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`w-full h-full object-cover ${scanStatus !== 'idle' ? 'opacity-50 blur-sm' : ''} transition-all duration-500`}
               />
-              
+
               {/* Scan Overlay UI */}
               <div className="absolute inset-0 border-[4px] border-indigo-500/30 m-8 rounded-xl pointer-events-none" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
@@ -374,7 +374,7 @@ export default function MainEditor() {
 
             <div className="p-5 bg-[#15171c] flex justify-between items-center">
               <p className="text-sm text-gray-400">Position the item within the frame and capture.</p>
-              <button 
+              <button
                 onClick={captureObject}
                 disabled={scanStatus !== 'idle'}
                 className="bg-accent hover:bg-purple-500 disabled:opacity-50 text-white px-8 py-3 rounded-xl font-bold shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all"
@@ -391,10 +391,10 @@ export default function MainEditor() {
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-panel rounded-2xl w-full max-w-4xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
             <div className="p-5 border-b border-white/10 flex justify-between items-center bg-[#15171c]">
-              <h2 className="font-bold text-lg flex items-center"><BoxIcon className="w-5 h-5 mr-2 text-indigo-400"/> 3D Asset Catalog</h2>
-              <button onClick={() => setShowCatalogModal(false)} className="text-gray-400 hover:text-white p-1 bg-white/5 rounded-md transition-colors"><X className="w-5 h-5"/></button>
+              <h2 className="font-bold text-lg flex items-center"><BoxIcon className="w-5 h-5 mr-2 text-indigo-400" /> 3D Asset Catalog</h2>
+              <button onClick={() => setShowCatalogModal(false)} className="text-gray-400 hover:text-white p-1 bg-white/5 rounded-md transition-colors"><X className="w-5 h-5" /></button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto grid grid-cols-3 gap-6">
               {[
                 { name: "Premium Sofa Set", type: "Furniture", image: "🛋️" },
@@ -428,7 +428,7 @@ export default function MainEditor() {
       <div className="w-[25%] h-full">
         <AIChatPanel updateScene={handleAIUpdate} />
       </div>
-      
+
     </div>
   );
 }
